@@ -4,8 +4,8 @@ import time
 from fractions import Fraction
 from PIL import Image, ImageChops
 
-def snap():
-    filename = "image-%s.png" % datetime.now().strftime("%Y-%m-%dT%H%M%S")
+def snap(max_length):
+    images = []
     with picamera.PiCamera() as camera:
         camera.resolution = (1024, 768)
         # Camera warm-up time
@@ -14,14 +14,16 @@ def snap():
         camera.framerate = Fraction(1, 6)
         camera.shutter_speed = 6000000 #6s
         #camera.iso = 800
-        camera.awb_mode = 'cloudy'
+        camera.awb_mode = 'horizon'
         # This gives ISO of 1250
         camera.exposure_mode = 'sports'
-        # camera.led = False # Have to do this setting as Root
-        time.sleep(10)
-        camera.capture(filename)
+        for filename in camera.capture_continuous('img{timestamp:%Y-%m-%d-%H%M%S}.png')
+            print('Captured %s' % filename)
+            images.append(filename)
+            if len(images) == max_length:
+                break
     camera.close()
-    return filename
+    return images
 
 def image_stack(image_list):
     matchimage=Image.open(image_list[0])
@@ -44,10 +46,8 @@ def image_stack(image_list):
 
 
 if __name__ == '__main__':
-    file_list = []
-    for i in range(0,5):
-        filename = snap()
-        file_list.append(filename)
+    max_length=10
+    file_list = snap(max_length)
     combined_file = image_stack(file_list)
     print combined_file
 
