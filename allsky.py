@@ -13,11 +13,12 @@ def snap(max_length):
         # Set a framerate of 1/6fps, then set shutter
         camera.framerate = Fraction(1, 6)
         camera.shutter_speed = 6000000 #6s
-        #camera.iso = 800
-        camera.awb_mode = 'horizon'
+        camera.iso = 800
+        camera.awb_mode = 'off'
+        camera.color_effects = (128,128)
         # This gives ISO of 1250
-        camera.exposure_mode = 'sports'
-        for filename in camera.capture_continuous('img{timestamp:%Y-%m-%d-%H%M%S}.png')
+        # camera.exposure_mode = 'sports'
+        for filename in camera.capture_continuous('img{timestamp:%Y-%m-%d-%H%M%S}.png'):
             print('Captured %s' % filename)
             images.append(filename)
             if len(images) == max_length:
