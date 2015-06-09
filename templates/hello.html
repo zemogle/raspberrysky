@@ -37,7 +37,7 @@
     {% block main%}
       <h2>Latest Raspberry Sky images</h2>
       <div class="image-viewer">
-      <img src="{{latest.0}}" />
+      <img src="{{lastimage.0}}" />
       </div>
       {% endblock %}
     </div>
@@ -47,7 +47,7 @@
         <h2>Image List!</h2>
         <ul>
         {% for image in filelist%}
-        <li><a href="">{{image.1}}</a></li>
+        <li><a href="{{image.0}}">{{image.1}}</a></li>
         {% endfor %}
         </ul>
       {% else %}
