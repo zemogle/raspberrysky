@@ -34,12 +34,15 @@
   <div class="container">
   <div class="row">
     <div class="eight columns">
+    {% block main%}
       <h2>Latest Raspberry Sky images</h2>
       <div class="image-viewer">
       <img src="{{latest.0}}" />
       </div>
+      {% endblock %}
     </div>
     <div class="four columns">
+    {% block side %}
       {% if filelist %}
         <h2>Image List!</h2>
         <ul>
@@ -51,6 +54,7 @@
         <h4>No files sorry</h4>
       {% endif %}
     </div>
+    {% endblock %}
   </div>
 
 <!-- End Document
