@@ -6,7 +6,7 @@ from PIL import Image, ImageChops
 import numpy
 import logging
 
-FORMAT = '%(asctime)-15s  %(user)-8s %(message)s'
+FORMAT = '%(asctime)-15s %(user)-8s %(message)s'
 logging.basicConfig(format=FORMAT,level=logging.DEBUG)
 logger = logging.getLogger('imgserver')
 
@@ -34,6 +34,17 @@ def snap(max_length):
         camera.stop_preview()
     camera.close()
     return images
+
+def image_burst(max_length):
+    with picamera.PiCamera() as camera:
+        camera.resolution = (1280, 720)
+        camera.start_preview()
+        time.sleep(1)
+        for i, filename in enumerate(camera.capture_continuous('image{counter:02d}.jpg')):
+            logger.debug('Captured image %s' % filename)
+            if i == max_length:
+                break
+        camera.stop_preview()
 
 def image_array_capture():
     with picamera.PiCamera() as camera:
@@ -90,6 +101,6 @@ def image_stack(image_list):
 
 if __name__ == '__main__':
     max_length=2
-    file_list = snap(max_length)
-    combined_file = image_stack(file_list)
+    file_list = image_burst(max_length)
+    #combined_file = image_stack(file_list)
     print combined_file
