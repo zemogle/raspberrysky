@@ -14,6 +14,7 @@ def snap(max_length):
     images = []
     with picamera.PiCamera() as camera:
         camera.resolution = (1024, 768)
+        camera.start_preview()
         # Camera warm-up time
         time.sleep(2)
         # Set a framerate of 1/6fps, then set shutter
@@ -24,14 +25,15 @@ def snap(max_length):
         camera.color_effects = (128,128)
         # This gives ISO of 1250
         # camera.exposure_mode = 'sports'
+        logger.debug('Starting image capture')
         for filename in camera.capture_continuous('img{timestamp:%Y-%m-%d-%H%M%S}.png'):
             logger.debug('Captured %s' % filename)
             images.append(filename)
             if len(images) == max_length:
                 break
+        camera.stop_preview()
     camera.close()
     return images
-
 
 def image_array_capture():
     with picamera.PiCamera() as camera:
