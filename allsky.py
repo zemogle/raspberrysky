@@ -6,7 +6,7 @@ from PIL import Image, ImageChops
 import numpy
 import logging
 
-FORMAT = '%(asctime)-15s %(user)-8s %(message)s'
+FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT,level=logging.DEBUG)
 logger = logging.getLogger('imgserver')
 
@@ -36,15 +36,25 @@ def snap(max_length):
     return images
 
 def image_burst(max_length):
+    images = []
     with picamera.PiCamera() as camera:
         camera.resolution = (1280, 720)
         camera.start_preview()
+        camera.framerate = Fraction(1, 6)
+        camera.shutter_speed = 6000000 #6s
+        camera.iso = 800
+        camera.awb_mode = 'off'
+        camera.color_effects = (128,128)
+        logger.debug('Starting image capture')
         time.sleep(1)
         for i, filename in enumerate(camera.capture_continuous('image{counter:02d}.jpg')):
             logger.debug('Captured image %s' % filename)
+            images.append(filename)
             if i == max_length:
                 break
         camera.stop_preview()
+    camera.close()
+    return images
 
 def image_array_capture():
     with picamera.PiCamera() as camera:
