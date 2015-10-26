@@ -10,36 +10,11 @@ FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT,level=logging.DEBUG)
 logger = logging.getLogger('imgserver')
 
-def snap(max_length):
-    images = []
-    with picamera.PiCamera() as camera:
-        camera.resolution = (1024, 768)
-        camera.start_preview()
-        # Camera warm-up time
-        time.sleep(2)
-        # Set a framerate of 1/6fps, then set shutter
-        camera.framerate = Fraction(1, 6)
-        #camera.shutter_speed = 6000000 #6s
-        camera.iso = 800
-        camera.awb_mode = 'off'
-        camera.color_effects = (128,128)
-        # This gives ISO of 1250
-        # camera.exposure_mode = 'sports'
-        logger.debug('Starting image capture')
-        for filename in camera.capture_continuous('img{timestamp:%Y-%m-%d-%H%M%S}.png'):
-            logger.debug('Captured %s' % filename)
-            images.append(filename)
-            if len(images) == max_length:
-                break
-        camera.stop_preview()
-    camera.close()
-    return images
-
 def image_burst(max_length):
     images = []
     with picamera.PiCamera() as camera:
         camera.resolution = (1280, 720)
-        camera.start_preview()
+        # camera.start_preview()
         camera.framerate = Fraction(1, 6)
         camera.shutter_speed = 6000000 #6s
         camera.iso = 800
@@ -52,11 +27,11 @@ def image_burst(max_length):
             images.append(filename)
             if i == max_length:
                 break
-        camera.stop_preview()
+        # camera.stop_preview()
     camera.close()
     return images
 
-def image_array_capture():
+def single_image_capture():
     with picamera.PiCamera() as camera:
         camera.resolution = (1280, 720)
         #camera.start_preview()
@@ -94,7 +69,7 @@ def image_stack(image_list):
     data=Image.open(image_list[0])
     for img in image_list[1:]:
         currentimage=Image.open(img)
-        data=ImageChops.lighter(matchimage, currentimage)
+        data=ImageChops.lighter(data, currentimage)
         logger.debug('Adding data to the stack')
     filename = "combined-%s.png" % datetime.now().strftime("%Y-%m-%dT%H%M%S")
     make_image(data, filename)
@@ -112,5 +87,4 @@ def image_stack(image_list):
 if __name__ == '__main__':
     max_length=2
     file_list = image_burst(max_length)
-    #combined_file = image_stack(file_list)
-    print combined_file
+    combined_file = image_stack(file_list)
