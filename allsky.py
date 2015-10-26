@@ -6,7 +6,7 @@ from PIL import Image, ImageChops
 import numpy
 import logging
 
-FORMAT = '%(asctime)-15s %(clientip)s %(user)-8s %(message)s'
+FORMAT = '%(asctime)-15s  %(user)-8s %(message)s'
 logging.basicConfig(format=FORMAT,level=logging.DEBUG)
 logger = logging.getLogger('imgserver')
 
@@ -19,7 +19,7 @@ def snap(max_length):
         time.sleep(2)
         # Set a framerate of 1/6fps, then set shutter
         camera.framerate = Fraction(1, 6)
-        camera.shutter_speed = 6000000 #6s
+        #camera.shutter_speed = 6000000 #6s
         camera.iso = 800
         camera.awb_mode = 'off'
         camera.color_effects = (128,128)
