@@ -3,6 +3,7 @@ from datetime import datetime
 import time
 from fractions import Fraction
 from PIL import Image, ImageChops
+import numpy
 
 def snap(max_length):
     images = []
@@ -26,16 +27,39 @@ def snap(max_length):
     camera.close()
     return images
 
+
+# def image_array_capture():
+#     with picamera.PiCamera() as camera:
+#         with picamera.array.PiArrayOutput(camera) as output:
+#             camera.capture(output, 'rgb')
+#             print('Captured %dx%d image' % (output.array.shape[1], output.array.shape[0]))
+
+
+def make_image(data, filename):
+    '''
+    Function to read in the image array
+    - Find the 99.5% value
+    - Make all values above 99.5% value white
+    - Write image array to a PNG
+    '''
+    #data1 = data.reshape(data.shape[0]*data.shape[1])
+    max_val = numpy.percentile(data,99.5)
+    scaled = data*256./max_val
+    new_scaled = numpy.ma.masked_greater(scaled, 255.)
+    new_scaled.fill_value=255.
+    img_data = new_scaled.filled()
+    result = Image.fromarray(img_data.astype(numpy.uint8))
+    result.save(filename)
+    return filename
+
 def image_stack(image_list):
-    matchimage=Image.open(image_list[0])
+    data=Image.open(image_list[0])
     filename = "combined-%s.png" % datetime.now().strftime("%Y-%m-%dT%H%M%S")
     for img in image_list[1:]:
         currentimage=Image.open(img)
-        matchimage=ImageChops.lighter(matchimage, currentimage)
-    matchimage.save(filename,"PNG")
+        data=ImageChops.lighter(matchimage, currentimage)
+    make_image(data, filename)
     return filename
-
-
     # im=np.array(matchimage,dtype=np.float32)
     # for img in files[1:]:
     #     currentimage=Image.open(img)
@@ -51,5 +75,3 @@ if __name__ == '__main__':
     file_list = snap(max_length)
     combined_file = image_stack(file_list)
     print combined_file
-
-
