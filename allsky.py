@@ -3,7 +3,7 @@ from datetime import datetime
 import time
 from fractions import Fraction
 from PIL import Image, ImageChops
-import numpy
+import numpy as np
 import logging
 
 FORMAT = '%(asctime)-15s %(message)s'
@@ -45,43 +45,48 @@ def single_image_capture():
     camera.close()
     # camera.stop_preview()
 
+def scale_data(data):
+    '''
+    Scale image
+    - Find the 99.5% value
+    - Make all values above 99.5% value white
+    '''
+    data[data<0.]=0.
+    median = np.median(data)
+    data-= median
+    data[data<0.]=0.
+    sc_data= data #np.arcsinh(data)
+    max_val = np.percentile(sc_data,99.5)
+    logging.warning('99.5 =%s' % max_val)
+    scaled = sc_data*255./(max_val)
+    scaled[scaled>255]=255
+    logging.warning('Median of scaled=%s' % np.median(scaled))
+    logging.warning('Min scaled=%s' % scaled.min())
+    return scaled
 
 def make_image(data, filename):
     '''
     Function to read in the image array
-    - Find the 99.5% value
-    - Make all values above 99.5% value white
-    - Write image array to a PNG
+    - Write image array to a file
     '''
     #data1 = data.reshape(data.shape[0]*data.shape[1])
     logger.debug('Starting image scaling')
-    max_val = numpy.percentile(data,99.5)
-    scaled = data*256./max_val
-    new_scaled = numpy.ma.masked_greater(scaled, 255.)
-    new_scaled.fill_value=255.
-    img_data = new_scaled.filled()
-    result = Image.fromarray(img_data.astype(numpy.uint8))
+    img_data = scale_data(data)
+    result = Image.fromarray(img_data.astype(np.uint8))
     result.save(filename)
     logger.debug('Saved image stack to file %s' % filename)
     return filename
 
-def image_stack(image_list):
-    data=Image.open(image_list[0])
-    for img in image_list[1:]:
-        currentimage=Image.open(img)
-        data=ImageChops.lighter(data, currentimage)
-        logger.debug('Adding data to the stack')
+def image_stack(images):
     filename = "combined-%s.png" % datetime.now().strftime("%Y-%m-%dT%H%M%S")
-    make_image(data, filename)
+    im=np.array(Image.open(images[0]),dtype=np.float32)
+    for img in images[1:]:
+        currentimage=Image.open(img)
+        im += np.array(currentimage, dtype=np.float32)
+    make_image(im, filename)
     return filename
-    # im=np.array(matchimage,dtype=np.float32)
-    # for img in files[1:]:
-    #     currentimage=Image.open(img)
-    #     im += np.array(currentimage, dtype=np.float32)
-    # im /= len(files) * 0.25 # lowered brightness, with magic factor
-    # # clip, convert back to uint8:
-    # final_image = Image.fromarray(np.uint8(im.clip(0,255)))
-    # final_image.save('all_averaged.jpg', 'JPEG')
+
+
 
 
 if __name__ == '__main__':
