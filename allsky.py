@@ -5,6 +5,7 @@ from fractions import Fraction
 from PIL import Image, ImageChops
 import numpy as np
 import logging
+from io import BytesIO
 
 FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT,level=logging.DEBUG)
@@ -32,19 +33,23 @@ def image_burst(max_length):
     return images
 
 def single_image_capture():
-    my_stream = BytesIO()
+    stream = BytesIO()
     with picamera.PiCamera() as camera:
         camera.resolution = (1280, 720)
         #camera.start_preview()
-        sleep(5)
         camera.shutter_speed = 90000000
         camera.iso = 800
         camera.awb_mode = 'off'
         camera.color_effects = (128,128)
         # Give the camera some time to adjust to conditions
         time.sleep(2)
-        camera.capture(my_stream, 'jpeg')
-    return my_stream
+        camera.capture(stream, 'jpeg')
+    stream.seek(0)
+    yield stream.read()
+
+    # reset stream for next frame
+    stream.seek(0)
+    stream.truncate()
 
 def scale_data(data):
     '''
