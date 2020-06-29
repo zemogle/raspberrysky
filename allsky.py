@@ -32,18 +32,19 @@ def image_burst(max_length):
     return images
 
 def single_image_capture():
+    my_stream = BytesIO()
     with picamera.PiCamera() as camera:
         camera.resolution = (1280, 720)
         #camera.start_preview()
-        camera.shutter_speed = 6000000
+        sleep(5)
+        camera.shutter_speed = 90000000
         camera.iso = 800
         camera.awb_mode = 'off'
         camera.color_effects = (128,128)
         # Give the camera some time to adjust to conditions
         time.sleep(2)
-        camera.capture('foo.jpg')
-    camera.close()
-    # camera.stop_preview()
+        camera.capture(my_stream, 'jpeg')
+    return my_stream
 
 def scale_data(data):
     '''
@@ -91,5 +92,5 @@ def image_stack(images):
 
 if __name__ == '__main__':
     max_length=2
-    file_list = image_burst(max_length)
+    file_list = single_image_capture()
     combined_file = image_stack(file_list)
