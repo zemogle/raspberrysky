@@ -31,11 +31,14 @@ def single_image_stream():
 
 def single_image_capture(filename):
     camera = picamera.PiCamera()
-    #camera.start_preview()
     camera.iso = 800
-    # Give the camera some time to adjust to conditions
+    camera.sensor_mode=3
     camera.resolution = (1024, 768)
+    camera.framerate=Fraction(1, 10)
+    camera.shutter_speed = 10000000
+    camera.iso = 800
     camera.start_preview()
+    # Give the camera some time to adjust to conditions
     time.sleep(20)
     camera.capture(filename)
     return filename
