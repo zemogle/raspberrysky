@@ -30,14 +30,14 @@ def single_image_stream():
     stream.truncate()
 
 def single_image_capture(filename):
-    with picamera.PiCamera(framerate=Fraction(1, 10),sensor_mode=3,resolution = (1280, 720)) as camera:
-        #camera.start_preview()
-        camera.shutter_speed = 10000000
-        camera.iso = 800
-        camera.exposure_mode = 'off'
-        # Give the camera some time to adjust to conditions
-        time.sleep(20)
-        camera.capture(filename)
+    camera = picamera.PiCamera()
+    #camera.start_preview()
+    camera.iso = 800
+    # Give the camera some time to adjust to conditions
+    camera.resolution = (1024, 768)
+    camera.start_preview()
+    time.sleep(20)
+    camera.capture(filename)
     return filename
 
 def scale_data(data):
