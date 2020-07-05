@@ -4,7 +4,7 @@ import os
 from flask import Flask, render_template, Response, send_from_directory
 import socket
 
-from allsky import single_image_capture
+from allsky import single_image_raspistill, single_image_stream
 
 app = Flask(__name__)
 
@@ -16,7 +16,7 @@ def index():
 @app.route('/latest.jpg')
 def latest_image():
     ''' Static image snapshot, useful for timelapse '''
-    return Response(single_image_capture(), mimetype='image/jpeg')
+    return Response(single_image_stream(), mimetype='image/jpeg')
 
 
 if __name__ == '__main__':

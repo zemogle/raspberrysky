@@ -6,6 +6,7 @@ from PIL import Image, ImageChops
 import numpy as np
 import logging
 from io import BytesIO
+import subprocess
 
 FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT,level=logging.DEBUG)
@@ -15,7 +16,7 @@ def single_image_stream():
     stream = BytesIO()
     with picamera.PiCamera(framerate=Fraction(1, 10),sensor_mode=3,resolution = (1280, 720)) as camera:
         #camera.start_preview()
-        camera.shutter_speed = 10000000
+        # camera.shutter_speed = 10000000
         camera.iso = 800
         camera.awb_mode = 'off'
         camera.exposure_mode = 'off'
@@ -43,6 +44,15 @@ def single_image_capture(filename):
     camera.capture(filename)
     return filename
 
+def single_image_raspistill(filename='test.jpg'):
+    sp = subprocess.run(['raspistill','-n','-w','1024','-h','720','-o',filename])
+    if sp.returncode == 0:
+        sys.stdout.write(f'Image {filename} Captured')
+    else:
+        sys.stderr.write(f'Problem with camera')
+        sys.stderr.write(sp.stderr)
+    return
+
 def scale_data(data):
     '''
     Scale image
@@ -64,4 +74,4 @@ def scale_data(data):
 
 
 if __name__ == '__main__':
-    file_list = single_image_capture('test.jpg')
+    single_image_raspistill('test.jpg')
