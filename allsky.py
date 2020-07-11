@@ -7,6 +7,7 @@ import numpy as np
 import logging
 from io import BytesIO
 import subprocess
+import sys
 
 FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT,level=logging.DEBUG)
