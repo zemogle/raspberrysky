@@ -45,7 +45,9 @@ def single_image_capture(filename):
     return filename
 
 def single_image_raspistill(filename='test.jpg'):
-    sp = subprocess.run(['raspistill','-n','-w','1024','-h','720','-o',filename])
+    now = datetime.utcnow()
+    annot = "Cardiff %Y-%m-%d %X"
+    sp = subprocess.run(['raspistill','-n','-w','1012','-h','760','--iso','800','-ex','verylong','-awb','off','-a',annot,'-o',filename])
     if sp.returncode == 0:
         sys.stdout.write(f'Image {filename} Captured')
     else:
@@ -74,4 +76,4 @@ def scale_data(data):
 
 
 if __name__ == '__main__':
-    single_image_raspistill('test.jpg')
+    single_image_raspistill()
