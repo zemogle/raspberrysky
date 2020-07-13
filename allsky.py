@@ -48,7 +48,7 @@ def single_image_capture(filename):
 def single_image_raspistill(filename='test.jpg'):
     now = datetime.utcnow()
     annot = "Cardiff %Y-%m-%d %X"
-    sp = subprocess.run(['raspistill','-n','-w','1012','-h','760','-ISO','800','-ex','verylong','-awb','off','-a',annot,'-o',filename])
+    sp = subprocess.run(['raspistill','-n','-w','1012','-h','760','-ISO','800','-ex','verylong','-awb','off','-a',annot,'-o',filename], capture_output=True)
     if sp.returncode == 0:
         sys.stdout.write(f'Image {filename} Captured')
     else:
