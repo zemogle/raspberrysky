@@ -1,9 +1,22 @@
 <html>
   <head>
     <title>Pemberley All Sky Cam</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type=text/javascript>
+            $(function() {
+              $('a#test').bind('click', function() {
+                $.getJSON('/snap',
+                    function(data) {
+                  //do nothing
+                });
+                return false;
+              });
+            });
+    </script>
   </head>
   <body>
     <h1>All Sky Cam</h1>
-    <img src="{{ url_for('latest_image') }}">
+    <a href="" id="test">Snap</a>
+    <img src="/static/foo.jpg">
   </body>
 </html>

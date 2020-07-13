@@ -13,11 +13,16 @@ def index():
     """All sky streaming home page."""
     return render_template('index.html', name=socket.gethostname())
 
-@app.route('/latest.jpg')
+@app.route('/snap.jpg')
 def latest_image():
     ''' Static image snapshot, useful for timelapse '''
     return Response(single_image_stream(), mimetype='image/jpeg')
 
+#background process happening without any refreshing
+@app.route('/snap')
+def background_process_test():
+    single_image_raspistill(filename='static/snap.jpg')
+    return ("nothing")
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', threaded=True, port=8000)
