@@ -1,4 +1,3 @@
-import picamera
 from datetime import datetime
 import time
 from fractions import Fraction
@@ -7,53 +6,28 @@ import numpy as np
 import logging
 from io import BytesIO
 import subprocess
+import signal
 import sys
+import time
 
 FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT,level=logging.DEBUG)
 logger = logging.getLogger('imgserver')
 
-def single_image_stream():
-    stream = BytesIO()
-    with picamera.PiCamera(framerate=Fraction(1, 10),sensor_mode=3,resolution = (1280, 720)) as camera:
-        #camera.start_preview()
-        # camera.shutter_speed = 10000000
-        camera.iso = 800
-        camera.awb_mode = 'off'
-        camera.exposure_mode = 'off'
-        # Give the camera some time to adjust to conditions
-        time.sleep(20)
-        camera.capture(stream, 'jpeg')
-    stream.seek(0)
-    yield stream.read()
 
-    # reset stream for next frame
-    stream.seek(0)
-    stream.truncate()
-
-def single_image_capture(filename):
-    camera = picamera.PiCamera()
-    camera.iso = 800
-    camera.sensor_mode=3
-    camera.resolution = (1024, 768)
-    camera.framerate=Fraction(1, 10)
-    camera.shutter_speed = 10000000
-    camera.iso = 800
-    camera.start_preview()
-    # Give the camera some time to adjust to conditions
-    time.sleep(20)
-    camera.capture(filename)
-    return filename
-
-def single_image_raspistill(filename='test.jpg'):
+def single_image_raspistill(filename='test.jpg', exp=200000000):
     now = datetime.utcnow()
     annot = "Cardiff %Y-%m-%d %X"
-    sp = subprocess.run(['raspistill','-n','-w','1012','-h','760','-ISO','800','-ex','verylong','-awb','off','-a',annot,'-o',filename], capture_output=True)
-    if sp.returncode == 0:
+    cmd = f"raspistill -n -w 1012 -h 760 -ISO 800 -ss {exp} -awb off -a 8 {annot} -o {filename}"
+    proc = subprocess.Popen(cmd.split(), shell=False)
+    if proc.poll() is None:
+        time.sleep(0.5)
+        proc.send_signal(signal.SIGUSR1)
+    if proc.returncode == 0:
         sys.stdout.write(f'Image {filename} Captured')
     else:
         sys.stderr.write(f'Problem with camera')
-        sys.stderr.write(sp.stderr)
+        sys.stderr.write(proc.stderr)
     return
 
 def scale_data(data):
