@@ -20,7 +20,7 @@ def background_process_test():
     return ("nothing")
 
 @app.route('/status')
-def background_process_test():
+def check_camera_exposure():
     if 'pid' in request.args:
         pid = int(request.args['pid'])
         return check_image_status(pid=pid)
