@@ -4,7 +4,7 @@ import os
 from flask import Flask, render_template, Response, send_from_directory
 import socket
 
-from allsky import single_image_raspistill, single_image_stream, check_image_status
+from allsky import single_image_raspistill, check_image_status
 
 app = Flask(__name__)
 
