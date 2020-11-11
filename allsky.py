@@ -36,7 +36,7 @@ def single_image_raspistill(filename='test.jpg', exp=20000000):
     else:
         sys.stderr.write(f'Problem with camera')
         sys.stderr.write(f"{proc.stderr}")
-    return
+    return proc.pid
 
 def check_image_status(pid):
     """ Check For the existence of a unix pid. """

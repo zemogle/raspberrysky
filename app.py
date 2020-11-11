@@ -17,8 +17,8 @@ def index():
 #background process happening without any refreshing
 @app.route('/snap')
 def background_process_test():
-    single_image_raspistill(filename='static/snap.jpg')
-    return ("nothing")
+    pid = single_image_raspistill(filename='static/snap.jpg')
+    return json.dumps({'pid':pid})
 
 @app.route('/status', methods=['GET'])
 def check_camera_exposure():
