@@ -25,7 +25,7 @@ def background_process_test():
         pid = int(request.args['pid'])
         return check_image_status(pid=pid)
     else:
-        return json.dumps({'status':'failed'}
+        return json.dumps({'status':'failed'})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', threaded=True, port=8000)
