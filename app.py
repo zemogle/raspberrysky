@@ -4,7 +4,7 @@ import os
 from flask import Flask, render_template, Response, send_from_directory
 import socket
 
-from allsky import single_image_raspistill, single_image_stream
+from allsky import single_image_raspistill, single_image_stream, check_image_status
 
 app = Flask(__name__)
 
@@ -13,16 +13,19 @@ def index():
     """All sky streaming home page."""
     return render_template('index.html', name=socket.gethostname())
 
-@app.route('/snap.jpg')
-def latest_image():
-    ''' Static image snapshot, useful for timelapse '''
-    return Response(single_image_stream(), mimetype='image/jpeg')
-
 #background process happening without any refreshing
 @app.route('/snap')
 def background_process_test():
     single_image_raspistill(filename='static/snap.jpg')
     return ("nothing")
+
+@app.route('/status')
+def background_process_test():
+    if 'pid' in request.args:
+        pid = int(request.args['pid'])
+        return check_image_status(pid=pid)
+    else:
+        return json.dumps({'status':'failed'}
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', threaded=True, port=8000)

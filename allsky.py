@@ -1,34 +1,50 @@
-from datetime import datetime
 import time
-from fractions import Fraction
-from PIL import Image, ImageChops
 import numpy as np
 import logging
-from io import BytesIO
 import subprocess
 import signal
 import sys
 import time
+import os
 
 FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT,level=logging.DEBUG)
 logger = logging.getLogger('imgserver')
 
+def camera_active():
+    # is the camera running?
+    cmd = "ps aux |grep raspistill -n -w"
+    lines = subprocess.check_output(cmd,shell=True)
+    for line in lines.decode("utf-8").split('\n'):
+        if '-awb off' in line:
+            return True
+    return False
 
-def single_image_raspistill(filename='test.jpg', exp=200000000):
+
+def single_image_raspistill(filename='test.jpg', exp=20000000):
     now = datetime.utcnow()
-    annot = "Cardiff %Y-%m-%d %X"
-    cmd = f"raspistill -n -w 1012 -h 760 -ISO 800 -ss {exp} -awb off -a 8 {annot} -o {filename}"
+    annot = "%Y-%m-%d  %H:%M:%S"
+    cmd = f"raspistill -n -w 1012 -h 760 -ISO 800 -ss {exp} -awb off -a 8 -a '{annot}' -o {filename}"
     proc = subprocess.Popen(cmd.split(), shell=False)
-    if proc.poll() is None:
-        time.sleep(0.5)
-        proc.send_signal(signal.SIGUSR1)
+    for n in range(0,100):
+        if proc.poll() is None:
+            time.sleep(0.5)
+            proc.send_signal(signal.SIGUSR1)
     if proc.returncode == 0:
         sys.stdout.write(f'Image {filename} Captured')
     else:
         sys.stderr.write(f'Problem with camera')
-        sys.stderr.write(proc.stderr)
+        sys.stderr.write(f"{proc.stderr}")
     return
+
+def check_image_status(pid):
+    """ Check For the existence of a unix pid. """
+    try:
+        os.kill(pid, 0)
+    except OSError:
+        return json.dumps({'status':'complete'})
+    else:
+        return json.dumps({'status':'runnning'})
 
 def scale_data(data):
     '''

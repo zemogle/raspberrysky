@@ -1,7 +1,10 @@
-<html>
+<!DOCTYPE html>
   <head>
     <title>Pemberley All Sky Cam</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type=text/javascript>
             $(function() {
               $('a#test').bind('click', function() {
@@ -15,8 +18,22 @@
     </script>
   </head>
   <body>
-    <h1>All Sky Cam</h1>
-    <a href="" id="test">Snap</a>
-    <img src="/static/foo.jpg">
+    <section class="section">
+      <div class="container">
+        <div class="columns">
+          <div class="column">
+            <a href="/snap" class="button">Snap</a>
+          </div>
+          <div class="column">
+            <h1 class="title">
+              All Sky Camera {name}
+            </h1>
+            <p class="subtitle">
+              <img src="" alt="Allsky camera snap" />
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
   </body>
 </html>
