@@ -19,7 +19,7 @@ def background_process_test():
     single_image_raspistill(filename='static/snap.jpg')
     return ("nothing")
 
-@app.route('/status')
+@app.route('/status', methods=['GET'])
 def check_camera_exposure():
     if 'pid' in request.args:
         pid = int(request.args['pid'])
