@@ -23,7 +23,8 @@ def camera_active():
 
 
 def single_image_raspistill(filename='test.jpg', exp=20000000):
-    now = datetime.utcnow()
+    if camera_active():
+        return False
     annot = "%Y-%m-%d  %H:%M:%S"
     cmd = f"raspistill -n -w 1012 -h 760 -ISO 800 -ss {exp} -awb off -a 8 -a '{annot}' -o {filename}"
     proc = subprocess.Popen(cmd.split(), shell=False)
