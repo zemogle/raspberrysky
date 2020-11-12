@@ -7,15 +7,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type=text/javascript>
     var pid = 0;
+    var status = '';
+    var tid;
             $(document).ready(function() {
               $('a#snap-button').bind('click', function() {
                 $.getJSON('/snap',
                     function(data) {
-                      console.log(data)
-                      pid = data
+                      pid = data.pid
+                      tid = setInterval(update_status, 2000);
                 });
                 return false;
               });
+
+
+              function update_status() {
+                $.getJSON('/status?pid='+pid,
+                    function(data) {
+                      $('#camera-status').html(data.status)
+                      if (data.status == 'complete'){
+                        clearInterval(tid);
+                      }
+                });
+              }
             });
     </script>
   </head>
