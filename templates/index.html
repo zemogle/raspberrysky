@@ -6,11 +6,13 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type=text/javascript>
-            $(function() {
-              $('a#test').bind('click', function() {
+    var pid = 0;
+            $(document).ready(function() {
+              $('a#snap-button').bind('click', function() {
                 $.getJSON('/snap',
                     function(data) {
-                  //do nothing
+                      console.log(data)
+                      pid = data
                 });
                 return false;
               });
@@ -21,8 +23,9 @@
     <section class="section">
       <div class="container">
         <div class="columns">
-          <div class="column">
-            <a href="/snap" class="button">Snap</a>
+          <div class="column is-one-quarter">
+            <div class="">Camera Status: <span id="camera-status"></span></div>
+            <a href="#" id="snap-button" class="button">Snap</a>
           </div>
           <div class="column">
             <h1 class="title">
