@@ -4,26 +4,18 @@ import os
 from flask import Flask, render_template, Response, send_from_directory, request
 import socket
 import json
-from celery import Celery
-
 
 from allsky import single_image_raspistill, check_image_status
+from tasks import background_task
 
-app = Flask(__name__)
+application = Flask(__name__)
 
 # Create the Celery instance, referring to the task queue (or broker) as redis
-celery = Celery(app.name, broker='redis://localhost:6379/0')
-
 
 @app.route('/')
 def index():
     """All sky streaming home page."""
     return render_template('index.html', name=socket.gethostname())
-
-@celery.task
-def background_task():
-    # some long running task here (this simple example has no output)
-    pid = single_image_raspistill(filename='static/snap.jpg')
 
 #background process happening without any refreshing
 @app.route('/snap')
@@ -56,4 +48,4 @@ def index():
     return {'task started'}
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', threaded=True, port=8000)
+    application.run(host='0.0.0.0', threaded=True, port=8000)
