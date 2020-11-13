@@ -35,17 +35,5 @@ def check_camera_exposure():
 # We need to give it the celery decorator to denote this
 
 
-# Create a flask route - this is a simpl get request
-@app.route('/', methods=['GET'])
-def index():
-    if request.method == 'GET':
-        # add the background task to the task queue,
-        # arguments for the task: arg1=10, arg2=20
-        # optionally countdown specifies a 60 second delay
-        task = my_background_task.apply_async(args=[10, 20], countdown=60)
-
-    # Flask returns this message to the browser
-    return {'task started'}
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', threaded=True, port=8000)
