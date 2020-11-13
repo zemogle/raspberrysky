@@ -8,7 +8,7 @@ import json
 from allsky import single_image_raspistill, check_image_status
 from tasks import background_task
 
-application = Flask(__name__)
+app = Flask(__name__)
 
 # Create the Celery instance, referring to the task queue (or broker) as redis
 
@@ -48,4 +48,4 @@ def index():
     return {'task started'}
 
 if __name__ == '__main__':
-    application.run(host='0.0.0.0', threaded=True, port=8000)
+    app.run(host='0.0.0.0', threaded=True, port=8000)
