@@ -9,27 +9,37 @@
     var pid = 0;
     var status = '';
     var tid;
-            $(document).ready(function() {
-              $('a#snap-button').bind('click', function() {
-                $.getJSON('/snap',
-                    function(data) {
-                      pid = data.pid
-                      tid = setInterval(update_status, 2000);
-                });
-                return false;
-              });
+    var newImage = new Image();
+    newImage.src = "/static/snap.jpg";
 
+    function refresh_image(){
+      document.getElementById("cam-image").src = newImage.src;
+      newImage = new Image();
+      newImage.src = "/static/snap.jpg?" + new Date().getTime();
+    }
 
-              function update_status() {
-                $.getJSON('/status?pid='+pid,
-                    function(data) {
-                      $('#camera-status').html(data.status)
-                      if (data.status == 'complete'){
-                        clearInterval(tid);
-                      }
-                });
-              }
-            });
+    function update_status() {
+      $.getJSON('/status?pid='+pid,
+          function(data) {
+            $('#camera-status').html(data.status)
+            if (data.status == 'complete'){
+              clearInterval(tid);
+              refresh_image()
+            }
+      });
+    }
+
+    $(document).ready(function() {
+      refresh_image();
+      $('a#snap-button').bind('click', function() {
+        $.getJSON('/snap',
+            function(data) {
+              pid = data.pid
+              tid = setInterval(update_status, 2000);
+        });
+        return false;
+      });
+    });
     </script>
   </head>
   <body>
@@ -45,7 +55,7 @@
               All Sky Camera {{name}}
             </h1>
             <p class="subtitle">
-              <img src="/static/snap.jpg" alt="Allsky camera snap" />
+              <img src="/static/snap.jpg" alt="Allsky camera snap" id="cam-image" />
             </p>
           </div>
         </div>
