@@ -17,7 +17,7 @@ def camera_active():
     cmd = "ps aux |grep raspistill -n -w"
     lines = subprocess.check_output(cmd,shell=True)
     for line in lines.decode("utf-8").split('\n'):
-        if '-awb off' in line:
+        if '-ISO 800' in line:
             return True
     return False
 
@@ -29,14 +29,12 @@ def single_image_raspistill(filename='test.jpg', exp=20000000):
     cmd = f"raspistill -n -w 1012 -h 760 -ISO 800 -ss {exp} -a 8 -a {annot} -o {filename}"
 
     try:
-        proc = subprocess.Popen(cmd.split(), shell=False)
-        time.sleep(2)
-        proc.send_signal(signal.SIGUSR1)
+        proc = subprocess.run(cmd.split(), shell=False)
     except:
         sys.stderr.write(f'Problem with camera')
         return False
     else:
-        return proc.pid
+        return True
 
 def check_image_status(pid):
     """ Check For the existence of a unix pid. """

@@ -4,20 +4,31 @@ import os
 from flask import Flask, render_template, Response, send_from_directory, request
 import socket
 import json
+from celery import Celery
+
 
 from allsky import single_image_raspistill, check_image_status
 
 app = Flask(__name__)
+
+# Create the Celery instance, referring to the task queue (or broker) as redis
+celery = Celery(app.name, broker='redis://localhost:6379/0')
+
 
 @app.route('/')
 def index():
     """All sky streaming home page."""
     return render_template('index.html', name=socket.gethostname())
 
+@celery.task
+def background_task():
+    # some long running task here (this simple example has no output)
+    pid = single_image_raspistill(filename='static/snap.jpg')
+
 #background process happening without any refreshing
 @app.route('/snap')
-def background_process_test():
-    pid = single_image_raspistill(filename='static/snap.jpg')
+def background_process():
+    task = background_task.apply_async()
     return json.dumps({'pid':pid})
 
 @app.route('/status', methods=['GET'])
@@ -27,6 +38,22 @@ def check_camera_exposure():
         return check_image_status(pid=pid)
     else:
         return json.dumps({'status':'failed'})
+
+# This is the celery task that will be run by the worker in the background
+# We need to give it the celery decorator to denote this
+
+
+# Create a flask route - this is a simpl get request
+@app.route('/', methods=['GET'])
+def index():
+    if request.method == 'GET':
+        # add the background task to the task queue,
+        # arguments for the task: arg1=10, arg2=20
+        # optionally countdown specifies a 60 second delay
+        task = my_background_task.apply_async(args=[10, 20], countdown=60)
+
+    # Flask returns this message to the browser
+    return {'task started'}
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', threaded=True, port=8000)
