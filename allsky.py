@@ -27,14 +27,14 @@ def single_image_raspistill(filename='test.jpg', exp=20000000):
         return False
     annot = "%Y-%m-%dT%H:%M:%S"
     cmd = f"raspistill -n -w 1012 -h 760 -ISO 800 -ss {exp} -a 8 -a {annot} -o {filename}"
-    proc = subprocess.Popen(cmd.split(), shell=False)
 
-    if proc.returncode == 0:
-        sys.stdout.write(f'Image {filename} Captured')
-    else:
+    try:
+        pid = subprocess.Popen(cmd.split(), shell=False).pid
+    except:
         sys.stderr.write(f'Problem with camera')
-        sys.stderr.write(f"{proc.stderr}")
-    return proc.pid
+        return False
+    else:
+        return pid
 
 def check_image_status(pid):
     """ Check For the existence of a unix pid. """
