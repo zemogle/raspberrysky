@@ -21,7 +21,7 @@ def index():
 @app.route('/snap')
 def background_process():
     task = background_task.apply_async()
-    return json.dumps({'pid':pid})
+    return json.dumps({'pid':task.id})
 
 @app.route('/status', methods=['GET'])
 def check_camera_exposure():
