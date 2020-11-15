@@ -43,8 +43,9 @@ def check_image_status(taskid):
     connection.close()
     try:
         status = json.loads(r)
-    except:
-        return json.dumps({'status':'SUCCESS'})
+    except Exception as e:
+        print(e)
+        return json.dumps({'status':'FAILED'})
     else:
         return json.dumps({'status':status['status']})
 
