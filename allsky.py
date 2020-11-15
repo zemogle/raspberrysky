@@ -6,6 +6,7 @@ import sys
 import time
 import os
 import json
+from redis import StrictRedis
 
 FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT,level=logging.DEBUG)
@@ -35,14 +36,17 @@ def single_image_raspistill(filename='test.jpg', exp=20000000):
     else:
         return True
 
-def check_image_status(pid):
+def check_image_status(taskid):
     """ Check For the existence of a unix pid. """
+    connection = StrictRedis.from_url('redis://localhost:6379')
+    r = connection.get(f'celery-task-meta-{taskid}')
+    connection.close()
     try:
-        os.kill(pid, 0)
-    except OSError:
-        return json.dumps({'status':'complete'})
+        status = json.loads(r)
+    except:
+        return json.dumps({'status':'SUCCESS'})
     else:
-        return json.dumps({'status':'runnning'})
+        return json.dumps({'status':status['status']})
 
 def scale_data(data):
     '''

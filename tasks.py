@@ -2,7 +2,7 @@ from celery import Celery
 
 from allsky import single_image_raspistill
 
-celery = Celery('tasks', broker='redis://localhost:6379/0',result_backend='redis://localhost:6379')
+celery = Celery('tasks', broker='redis://localhost:6379/0',result_backend='redis://localhost:6379/0')
 
 @celery.task
 def background_task():

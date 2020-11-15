@@ -9,20 +9,16 @@
     var pid = 0;
     var status = '';
     var tid;
-    var newImage = new Image();
-    newImage.src = "/static/snap.jpg";
 
     function refresh_image(){
-      document.getElementById("cam-image").src = newImage.src;
-      newImage = new Image();
-      newImage.src = "/static/snap.jpg?" + new Date().getTime();
+      $('#cam-image').attr("src", "/static/snap.jpg?"+ new Date().getTime());
     }
 
     function update_status() {
       $.getJSON('/status?pid='+pid,
           function(data) {
             $('#camera-status').html(data.status)
-            if (data.status == 'complete'){
+            if (data.status == 'SUCCESS'){
               clearInterval(tid);
               refresh_image()
             }

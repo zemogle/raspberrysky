@@ -26,10 +26,10 @@ def background_process():
 @app.route('/status', methods=['GET'])
 def check_camera_exposure():
     if 'pid' in request.args:
-        pid = int(request.args['pid'])
+        pid = request.args['pid']
         return check_image_status(pid=pid)
     else:
-        return json.dumps({'status':'failed'})
+        return json.dumps({'status':'FAILED'})
 
 # This is the celery task that will be run by the worker in the background
 # We need to give it the celery decorator to denote this
