@@ -27,7 +27,7 @@ def background_process():
 def check_camera_exposure():
     if 'pid' in request.args:
         pid = request.args['pid']
-        return check_image_status(pid=pid)
+        return check_image_status(taskid=pid)
     else:
         return json.dumps({'status':'FAILED'})
 
