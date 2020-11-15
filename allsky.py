@@ -44,8 +44,8 @@ def check_image_status(taskid):
     try:
         status = json.loads(r)
     except Exception as e:
-        print(e)
-        return json.dumps({'status':'FAILED'})
+        # print(e)
+        return json.dumps({'status':'RUNNING'})
     else:
         return json.dumps({'status':status['status']})
 
