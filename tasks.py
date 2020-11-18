@@ -7,4 +7,4 @@ celery = Celery('tasks', broker='redis://localhost:6379/0', backend='redis://loc
 @celery.task
 def background_task():
     # some long running task here (this simple example has no output)
-    pid = single_image_raspistill(filename='static/snap.jpg')
+    pid = single_image_raspistill(filename='static/snap.jpg', exp=120000000)
